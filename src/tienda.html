@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a la Tienda</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f4f4f9; }
+        .store-header { background-color: #5a67d8; color: white; padding: 2rem 1rem; text-align: center; }
+        .store-info { padding: 1rem; }
+        #store-name { margin: 0; }
+        #store-description { font-style: italic; }
+
+        /* Estilos del Widget de Chat */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            max-width: 90%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background-color: #5a67d8;
+            color: white;
+            padding: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            text-align: center;
+        }
+        .chat-window {
+            height: 300px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-input-area {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+        #chat-input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px;
+            outline: none;
+        }
+        #send-button {
+            border: none;
+            background-color: #5a67d8;
+            color: white;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+        .message {
+            padding: 8px 12px;
+            border-radius: 18px;
+            margin-bottom: 8px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: #e2e8f0;
+            align-self: flex-end;
+        }
+        .bot-message {
+            background-color: #c3dafe;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="store-header">
+        <h1 id="store-name">Cargando nombre de la tienda...</h1>
+        <p id="store-description"></p>
+    </header>
+
+    <main class="store-info">
+        <h2>Nuestros Productos</h2>
+        <!-- Aquí podrías cargar los productos dinámicamente -->
+    </main>
+
+    <div class="chat-widget">
+        <div class="chat-header">Asistente Virtual</div>
+        <div class="chat-window" id="chat-window">
+            <!-- Los mensajes del chat aparecerán aquí -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Escribe tu pregunta...">
+            <button id="send-button">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DEL FRONTEND ---
+
+        const storeNameEl = document.getElementById('store-name');
+        const chatWindow = document.getElementById('chat-window');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+
+        // 1. Obtener el ID de la tienda desde la URL
+        const pathParts = window.location.pathname.split('/');
+        const tiendaId = pathParts[pathParts.length - 1];
+
+        // 2. Lógica del Chat
+        async function sendMessage() {
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage(userMessage, 'user');
+            chatInput.value = '';
+
+            // Llamar al backend para obtener la respuesta del bot
+            const response = await fetch(`/chat/${tiendaId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: userMessage })
+            });
+            const data = await response.json();
+            appendMessage(data.respuesta, 'bot');
+        }
+
+        function appendMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            messageDiv.textContent = text;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll al final
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Saludo inicial del bot
+        appendMessage('¡Hola! ¿En qué puedo ayudarte hoy?', 'bot');
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Bot Ventas Final</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Bot Ventas - Panel Local</h1>
+<div id="login">
+    <input type="text" id="nombre" placeholder="Nombre del local">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="panel" style="display:none;">
+    <h2>Panel del local</h2>
+    <input type="file" id="archivoInput">
+    <select id="tipo">
+        <option value="foto">Foto</option>
+        <option value="video">Video corto</option>
+        <option value="documento">Documento</option>
+    </select>
+    <button onclick="subirArchivo()">Subir</button>
+    <h3>Archivos subidos:</h3>
+    <ul id="archivosList"></ul>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
